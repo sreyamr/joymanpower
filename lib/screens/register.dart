@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Models/register_model.dart';
+import '../config/app_controller.dart';
 import '../config/routes.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -11,6 +13,16 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController(text: '+91');  // Default text
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,11 +48,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20),
               // Input Fields
-              _buildTextField('Name', TextInputType.name),
-              _buildTextField('Email Address', TextInputType.emailAddress),
-              _buildTextField('Password', TextInputType.visiblePassword,
+              _buildTextField('Name',_nameController, TextInputType.name),
+              _buildTextField('Email Address', _emailController,TextInputType.emailAddress),
+              _buildTextField('Password',_passwordController, TextInputType.visiblePassword,
                   obscureText: true),
-              _buildTextField('Confirm Password', TextInputType.visiblePassword,
+              _buildTextField('Confirm Password',_confirmPasswordController, TextInputType.visiblePassword,
                   obscureText: true),
               _buildPhoneNumberField(),
               const SizedBox(height: 10),
@@ -78,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: _register,
                   child: const Text(
                     'Register',
                     style: TextStyle(fontSize: 16, color: Colors.white),
@@ -127,11 +139,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextInputType inputType,
+  Widget _buildTextField(String label,TextEditingController controller, TextInputType inputType,
       {bool obscureText = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
+        controller: controller,
         keyboardType: inputType,
         obscureText: obscureText,
         decoration: InputDecoration(
@@ -152,9 +165,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SizedBox(
           width: 80,
           child: TextField(
+            controller: _phoneController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              prefixText: '+91',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -164,6 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: TextField(
+            controller: _phoneNumberController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
               hintText: 'Mobile Number',
@@ -191,4 +205,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+  void _register() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match!')),
+      );
+      return;
+    }
+
+    final registerModel = RegisterModel(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+      phoneNumber: _phoneNumberController.text,
+    );
+
+    await AppController.saveRegisterData(registerModel);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registration Successful!')),
+    );
+
+    Navigator.pushNamed(context, AppRoutes.login);
+  }
+
 }
