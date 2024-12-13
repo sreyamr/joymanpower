@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:joymanpower/Models/register_model.dart';
+import 'package:joymanpower/config/app_controller.dart';
 import '../../config/routes.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -9,6 +11,22 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  RegisterModel? registerModel;
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  void _loadProfileData() async {
+    RegisterModel? profile = await AppController.getRegisterData();
+    if (profile != null) {
+      setState(() {
+        registerModel = profile;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,17 +71,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Icon(Icons.person, size: 40, color: Colors.blue),
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Aadhithya',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(registerModel?.name ?? 'Loading...',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Influencer',
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
+                    registerModel?.designation ?? "",
+                    style: const TextStyle(color: Colors.blue, fontSize: 14),
                   ),
                   Divider(),
                 ],
@@ -71,8 +88,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.mode_edit_outlined),
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.profileEditScreen);
+              onPressed: () async {
+
+                final result = await Navigator.pushNamed(context, AppRoutes.profileEditScreen);
+                if (result == true) {
+                  _loadProfileData();
+                }
               },
             ),
           ],
@@ -90,20 +111,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Personal Information',
             isBold: true,
             trailingIcon: Icons.edit,
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.profileInfoScreen);
+            onPressed: () async {
+              final result = await Navigator.pushNamed(context, AppRoutes.profileInfoScreen);
+              if (result == true) {
+                _loadProfileData();
+              }
             },
           ),
           const Divider(),
-          const _InfoTile(title: 'Mobile Number', subtitle: '+97654786688'),
-          const _InfoTile(title: 'Date of Birthday', subtitle: '06-06-2000'),
-          const _InfoTile(
+           _InfoTile(title: 'Mobile Number', subtitle:registerModel?.phoneNumber ?? ""),
+          _InfoTile(title: 'Date of Birthday', subtitle:registerModel?.dateOfBirth ?? "" ),
+          _InfoTile(
               title: 'Email Address',
-              subtitle: 'aadhithayarunachalam@gmail.com'),
+              subtitle: registerModel?.email ?? ""),
           _buildListTile(
             title: 'Social Media',
             isBold: true,
-            trailingIcon: Icons.edit,
+            //trailingIcon: Icons.edit,
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.socialMedia);
             },

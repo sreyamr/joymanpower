@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../config/app_controller.dart';
 import '../../utlis/decoratedTextFiled.dart';
 
 class ProfileInfoScreen extends StatefulWidget {
@@ -11,7 +12,14 @@ class ProfileInfoScreen extends StatefulWidget {
 }
 
 class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
-  @override
+  final TextEditingController mobileNumberController = TextEditingController();
+final TextEditingController dateOfBirthController = TextEditingController();
+final TextEditingController emailAddressController = TextEditingController();
+final TextEditingController addressController = TextEditingController();
+
+
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,10 +46,10 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      decoratedTextField(labelText: 'Mobile Number'),
-                      decoratedTextField(labelText: 'Date Of Birth'),
-                      decoratedTextField(labelText: 'Email Address'),
-                      decoratedTextField(labelText: 'Address'),
+                      decoratedTextField(labelText: 'Mobile Number', controller: mobileNumberController),
+                      decoratedTextField(labelText: 'Date Of Birth', controller: dateOfBirthController),
+                      decoratedTextField(labelText: 'Email Address', controller: emailAddressController),
+                      decoratedTextField(labelText: 'Address', controller: addressController),
                     ],
                   ),
                 ),
@@ -60,7 +68,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                   child: const Text('Delete',style: TextStyle(color: Colors.grey),),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed:_updateProfileData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade800,
                     shape: RoundedRectangleBorder(
@@ -75,5 +83,29 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         ],
       ),
     );
+  }
+
+  void _updateProfileData() async {
+    final mobile = mobileNumberController.text.trim();
+    final updatedDateOfBirth = dateOfBirthController.text.trim();
+    final updatedEmail = emailAddressController.text.trim();
+
+    if (mobile.isEmpty || updatedDateOfBirth.isEmpty || updatedEmail.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone, Date of Birth, and Email cannot be empty')),
+      );
+      return;
+    }
+
+    await AppController.updateProfile(
+      phone: mobile,
+      dateOfBirth: updatedDateOfBirth,
+      email: updatedEmail,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile updated successfully')),
+    );
+    Navigator.pop(context, true);
   }
 }

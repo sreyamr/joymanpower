@@ -4,6 +4,8 @@ class RegisterModel {
   String? password;
   String? confirmPassword;
   String? phoneNumber;
+  String? designation;
+  String? dateOfBirth;
 
   RegisterModel({
     this.name,
@@ -11,6 +13,8 @@ class RegisterModel {
     this.password,
     this.confirmPassword,
     this.phoneNumber,
+    this.designation,
+    this.dateOfBirth,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,6 +24,8 @@ class RegisterModel {
       'password': password,
       'confirm_password': confirmPassword,
       'phone_number': phoneNumber,
+      'designation': designation ?? '',
+      'dateOfBirth': dateOfBirth ?? '',
     };
   }
 
@@ -31,6 +37,8 @@ class RegisterModel {
       password: json['password'] ?? '',
       confirmPassword: json['confirm_password'] ?? '',
       phoneNumber: json['phone_number'] ?? '',
+      designation: json['designation'] ?? '',
+      dateOfBirth: json['dateOfBirth'] ?? '',
     );
   }
 }

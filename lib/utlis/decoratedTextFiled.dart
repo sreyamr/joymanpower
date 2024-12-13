@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Widget decoratedTextField({required String labelText}) {
+Widget decoratedTextField({required String labelText,required TextEditingController controller}) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0),
     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -18,6 +18,7 @@ Widget decoratedTextField({required String labelText}) {
       ],
     ),
     child: TextField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         border: InputBorder.none, // Removes the default underline

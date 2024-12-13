@@ -1,9 +1,44 @@
 import 'package:flutter/material.dart';
 
+import '../Models/register_model.dart';
+import '../config/app_controller.dart';
 import '../config/routes.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _login() async {
+    String enteredEmail = _userNameController.text.trim();
+    String enteredPassword = _passwordController.text.trim();
+
+    RegisterModel? storedModel = await AppController.getRegisterData();
+
+    if (storedModel != null) {
+      if (storedModel.name == enteredEmail && storedModel.password == enteredPassword) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Successful!')),
+        );
+        Navigator.pushNamed(context, AppRoutes.home);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid username or password.')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No user found. Please register first!')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +52,9 @@ class LoginScreen extends StatelessWidget {
             children: [
               buildTitleSection(),
               const SizedBox(height: 32),
-              buildInputField("Email Address"),
+              buildInputField("Username", controller: _userNameController),
               const SizedBox(height: 16),
-              buildInputField("Password", obscureText: true),
+              buildInputField("Password", controller: _passwordController, obscureText: true),
               const SizedBox(height: 8),
               buildForgotPassword(),
               const SizedBox(height: 24),
@@ -33,9 +68,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-
   Widget buildTitleSection() {
-    return  Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
@@ -44,15 +78,16 @@ class LoginScreen extends StatelessWidget {
         ),
         Text(
           "Login!",
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color:  Colors.blue.shade800),
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue.shade800),
         ),
       ],
     );
   }
 
-
-  Widget buildInputField(String label, {bool obscureText = false}) {
+  Widget buildInputField(String label,
+      {bool obscureText = false, TextEditingController? controller}) {
     return TextField(
+      controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
@@ -63,28 +98,24 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-
   Widget buildForgotPassword() {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          // TODO: Add Forgot Password Logic
+
         },
-        child:  Text("Forgot Password?", style: TextStyle(color: Colors.blue.shade800)),
+        child: Text("Forgot Password?", style: TextStyle(color: Colors.blue.shade800)),
       ),
     );
   }
-
 
   Widget buildLoginButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AppRoutes.home);
-        },
+        onPressed: _login,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue.shade800,
           shape: RoundedRectangleBorder(
@@ -102,21 +133,24 @@ class LoginScreen extends StatelessWidget {
   Widget buildRegisterText(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text("Don't have an account?", style:  TextStyle(color: Colors.grey),),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.register);
-            },
-            child: Text(
-              "Register",
-              style: TextStyle(
-                color: Colors.blue.shade800,
-                fontWeight: FontWeight.bold,
-              ),
+      children: [
+        const Text(
+          "Don't have an account?",
+          style: TextStyle(color: Colors.grey),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AppRoutes.register);
+          },
+          child: Text(
+            "Register",
+            style: TextStyle(
+              color: Colors.blue.shade800,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }

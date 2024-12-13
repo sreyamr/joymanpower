@@ -3,8 +3,25 @@ import 'package:flutter/material.dart';
 
 import '../../utlis/decoratedTextFiled.dart';
 
-class SocialMediaScreen extends StatelessWidget {
+class SocialMediaScreen extends StatefulWidget {
   const SocialMediaScreen({super.key});
+
+  @override
+  State<SocialMediaScreen> createState() => _SocialMediaScreenState();
+}
+
+class _SocialMediaScreenState extends State<SocialMediaScreen> {
+  // Controllers for the input fields
+  final TextEditingController socialMediaController = TextEditingController();
+  final TextEditingController linkUrlController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose controllers to avoid memory leaks
+    socialMediaController.dispose();
+    linkUrlController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,21 +49,30 @@ class SocialMediaScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    decoratedTextField(labelText: 'Social Media'),
-                    decoratedTextField(labelText: 'Link URL'),
+                    // Social Media field with controller
+                    decoratedTextField(
+                      labelText: 'Social Media',
+                      controller: socialMediaController,
+                    ),
+                    // Link URL field with controller
+                    decoratedTextField(
+                      labelText: 'Link URL',
+                      controller: linkUrlController,
+                    ),
                   ],
                 ),
               ),
             ),
           ),
           const Spacer(),
-        buildButton(context),
+          buildButton(context),
         ],
       ),
     );
   }
- Widget buildButton(BuildContext context){
-    return   Padding(
+
+  Widget buildButton(BuildContext context) {
+    return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,20 +81,38 @@ class SocialMediaScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('Delete',style: TextStyle(color: Colors.grey, fontSize: 16)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              saveSocialMediaDetails();
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade800,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
             ),
-            child: const Text('Save',style: TextStyle(color: Colors.white, fontSize: 16)),
+            child: const Text(
+              'Save',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
         ],
       ),
     );
- }
+  }
+
+  // Function to handle save action
+  void saveSocialMediaDetails() {
+    String socialMedia = socialMediaController.text;
+    String linkUrl = linkUrlController.text;
+
+    // For now, print the values (replace this with storage logic if needed)
+    print('Social Media: $socialMedia');
+    print('Link URL: $linkUrl');
+  }
 }
